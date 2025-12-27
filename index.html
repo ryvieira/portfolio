@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ryan Vieira — Visual System</title>
+    <title>Ryan Vieira — Portfolio</title>
     
     <link rel="icon" type="image/x-icon" href="img/favicon_r.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
 
     <style>
-        /* === RESET & CORE ENGINE === */
+        /* === RESET & CORE === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -26,412 +26,371 @@
             perspective: 2500px;
         }
 
-        /* TEXTURA DE GRÃO */
-        body::after {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Grain_Texture.png');
-            opacity: 0.06; pointer-events: none; z-index: 8000;
-            mix-blend-mode: overlay;
-        }
-
-        /* --- BARRA DE PROGRESSO VERTICAL (Para consistência visual, embora não use scroll aqui) --- */
-        #scroll-progress {
-            position: fixed; top: 0; left: 0;
-            width: 3px; height: 0%; 
-            background-color: #fff; 
-            z-index: 9999; 
-            transition: height 0.1s linear;
-        }
-
-        /* === HEADER UNIFICADO === */
-        header {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100px; /* Altura fixa para alinhar */
-            padding: 0 50px; 
-            display: grid; grid-template-columns: 1fr auto 1fr; /* 3 Colunas */
-            align-items: center; z-index: 1000;
+        /* --- THE SLICE LOADER --- */
+        #loader-wrapper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 9999;
+            display: flex; /* Cria colunas */
             pointer-events: none;
         }
-        header a, header div { pointer-events: auto; }
 
-        .lang-switcher {
-            display: flex; gap: 10px; font-size: 11px; 
-            letter-spacing: 0.1em; user-select: none; 
-            justify-self: center; /* Centralizado */
-            grid-column: 2; /* Força na coluna do meio */
-        }
-        .lang-btn { cursor: pointer; color: #333; transition: 0.3s; }
-        .lang-btn.active { color: #fff; font-weight: 600; }
-
-        /* === LOADER "SYSTEM BOOT" === */
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #050505;
-            z-index: 9999;
-            display: flex; flex-direction: column;
-            justify-content: flex-end; padding: 50px;
-            transition: transform 1s cubic-bezier(0.8, 0, 0.2, 1);
+        /* As 5 colunas pretas */
+        .loader-slice {
+            width: 20%; /* 100% / 5 = 20% */
+            height: 100%;
+            background-color: #000;
+            position: relative;
+            transform-origin: top;
+            transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1); /* Curva suave */
         }
 
-        .loader-data {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 12px; color: #666;
-            margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.1em;
-            display: flex; justify-content: space-between;
+        /* O Contador Gigante */
+        .loader-counter-container {
+            position: fixed;
+            bottom: 20px;
+            right: 40px;
+            z-index: 10000;
+            overflow: hidden; /* Para esconder quando sair */
         }
 
         .loader-counter {
-            font-family: 'Inter', sans-serif;
-            font-size: clamp(60px, 12vw, 140px);
-            font-weight: 300; 
+            font-size: clamp(80px, 15vw, 200px);
+            font-weight: 300;
             color: #fff;
-            line-height: 0.8; letter-spacing: -0.05em;
+            line-height: 0.8;
+            letter-spacing: -0.06em;
+            transition: transform 0.8s ease;
         }
 
-        /* Barra de progresso do Loader (Horizontal) */
-        .progress-track {
-            width: 100%; height: 4px;
-            background-color: rgba(255, 255, 255, 0.1);
-            margin-top: 15px; position: relative; overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%; width: 0%;
-            background-color: #fff; transition: width 0.02s linear;
-        }
+        /* ANIMAÇÃO DE SAÍDA (QUANDO CARREGADO) */
+        
+        /* 1. O Contador desce */
+        body.loaded .loader-counter { transform: translateY(100%); }
 
-        /* Estado carregado: Loader sobe */
-        body.loaded #loader { transform: translateY(-100%); pointer-events: none; }
+        /* 2. As fatias sobem com atraso (Stagger Effect) */
+        body.loaded .slice-1 { transform: translateY(-100%); transition-delay: 0.2s; }
+        body.loaded .slice-2 { transform: translateY(-100%); transition-delay: 0.3s; }
+        body.loaded .slice-3 { transform: translateY(-100%); transition-delay: 0.4s; }
+        body.loaded .slice-4 { transform: translateY(-100%); transition-delay: 0.5s; }
+        body.loaded .slice-5 { transform: translateY(-100%); transition-delay: 0.6s; }
 
 
-        /* === O PALCO DO SITE === */
-        .site-stage {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transform: scale(0.95);
+        /* --- CONTEÚDO DO SITE (Entrada) --- */
+        .main-container, footer, .lang-switcher {
+            opacity: 0;
+            transform: scale(1.1); /* Zoom out suave */
             transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
-            transition-delay: 0.4s;
+            transition-delay: 0.8s; /* Espera as fatias subirem */
         }
-        body.loaded .site-stage { opacity: 1; transform: scale(1); }
+        
+        body.loaded .main-container,
+        body.loaded footer,
+        body.loaded .lang-switcher { 
+            opacity: 1; 
+            transform: scale(1); 
+        }
 
+        /* RESTO DO CSS PADRÃO */
+        body::after {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Grain_Texture.png');
+            opacity: 0.05; pointer-events: none; z-index: 5000;
+        }
 
-        /* === ELEMENTOS VISUAIS === */
-
-        /* 1. TIPOGRAFIA LÍQUIDA (Fundo) */
         .bg-typo-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
             pointer-events: none; z-index: 0;
-            opacity: 0.4; 
         }
         .bg-typo {
-            font-size: 32vw; font-weight: 900; line-height: 0.8;
+            font-size: 42vw; font-weight: 900; line-height: 0.8;
             text-align: center; text-transform: uppercase;
             color: transparent;
-            -webkit-text-stroke: 1px rgba(255,255,255,0.04); 
+            -webkit-text-stroke: 1px rgba(255,255,255,0.08);
             transform-origin: center; will-change: transform;
             transition: transform 0.1s linear;
         }
 
-        /* 2. QUANTUM FIELD (Imagens) - Some no mobile */
-        .preview-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 10; 
-            transform-style: preserve-3d; transition: transform 0.1s linear;
-        }
-        .preview-group { 
-            position: absolute; width: 100%; height: 100%; 
-            opacity: 0; transition: opacity 0.4s ease; 
-            transform-style: preserve-3d; 
-        }
-        .preview-group.active { opacity: 1; }
-
-        .preview-img {
-            position: absolute;
-            width: clamp(180px, 15vw, 300px); height: auto;
-            object-fit: cover; top: 50%; left: 50%;
-            border-radius: 0;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-            opacity: 0;
-            filter: blur(15px) grayscale(1) brightness(0.6);
-            transform: translate(-50%, -50%) scale(0.4) translateZ(-400px) rotate(0deg);
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            will-change: transform, opacity, filter;
-        }
-
-        .preview-group.active .preview-img { 
-            opacity: 1; filter: blur(0px) grayscale(0) brightness(1);
-            transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(var(--s)) rotate(var(--r)) translateZ(0);
-        }
-
-
-        /* 3. UI CENTRAL */
-        .main-container {
-            display: flex; flex-direction: column; align-items: center; gap: 40px; 
-            z-index: 1000; position: relative;
-        }
-
-        .brand-logo { width: 60px; height: auto; display: block; margin-bottom: 20px; }
-
-        .separator-box { position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-        .dynamic-x { font-size: 24px; font-weight: 300; color: #fff; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-
-        .menu-links { display: flex; flex-direction: column; gap: 5px; align-items: center; }
-        .menu-links a { 
-            text-decoration: none; color: #555; font-size: 16px; font-weight: 500; 
-            text-transform: uppercase; letter-spacing: 0.1em;
-            transition: color 0.3s ease, letter-spacing 0.3s ease; 
-            position: relative; padding: 10px 20px;
-        }
-        .menu-links a:hover { color: #fff; letter-spacing: 0.2em; }
-        .menu-links a::before { content: '['; position: absolute; left: 0; opacity: 0; transition: 0.3s; color: #444; }
-        .menu-links a::after { content: ']'; position: absolute; right: 0; opacity: 0; transition: 0.3s; color: #444; }
-        .menu-links a:hover::before, .menu-links a:hover::after { opacity: 1; }
-
-
-        /* 4. DADOS TÉCNICOS */
-        .side-label { 
-            position: fixed; top: 50%; transform: translateY(-50%); 
-            font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #444; 
-            text-transform: uppercase; letter-spacing: 0.2em; writing-mode: vertical-lr;
-            z-index: 1001; pointer-events: none; 
-        }
-        .left-edge { left: 40px; transform: translateY(-50%) rotate(180deg); } 
-        .right-edge { right: 40px; }
-        
-        footer { 
-            position: fixed; bottom: 40px; left: 0; width: 100%; 
-            text-align: center; font-family: 'IBM Plex Mono', monospace; 
-            font-size: 10px; color: #444; letter-spacing: 0.2em; 
-            z-index: 1001; pointer-events: none; 
-        }
-
-        /* LÓGICA MULTILINGUE */
         .lang-en { display: none; }
         body.en-active .lang-pt { display: none; }
         body.en-active .lang-en { display: inline-block; }
 
-        /* === MOBILE === */
+        .lang-switcher {
+            position: fixed; top: 50px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; font-size: 11px; letter-spacing: 0.1em; z-index: 2000;
+            pointer-events: auto; user-select: none;
+        }
+        .lang-btn { cursor: pointer; color: #444; transition: 0.3s; }
+        .lang-btn.active { color: #fff; font-weight: 600; }
+
+        .preview-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1; 
+            transform-style: preserve-3d; transition: transform 0.1s linear;
+        }
+        .preview-group { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 0.4s ease; transform-style: preserve-3d; }
+        .preview-group.active { opacity: 1; }
+
+        .preview-img {
+            position: absolute; width: clamp(150px, 12vw, 250px); height: auto;
+            object-fit: cover; top: 50%; left: 50%;
+            border-radius: 0; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            opacity: 0; filter: blur(20px) grayscale(1) brightness(0.5);
+            transform: translate(-50%, -50%) scale(0.3) translateZ(-300px) rotate(0deg);
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            will-change: transform, opacity, filter;
+        }
+        .preview-group.active .preview-img { opacity: 0.7; filter: blur(0px) grayscale(0) brightness(1); }
+
+        /* Posições */
+        .p1 { transition-delay: 0.02s; } .active .p1 { transform: translate(-380%, -240%) scale(1.3) rotate(-8deg) translateZ(0); }
+        .p2 { transition-delay: 0.08s; } .active .p2 { transform: translate(-230%, -190%) scale(0.8) rotate(5deg) translateZ(0); }
+        .p3 { transition-delay: 0.04s; } .active .p3 { transform: translate(-50%, -330%) scale(1.0) rotate(-2deg) translateZ(0); }
+        .p4 { transition-delay: 0.12s; } .active .p4 { transform: translate(50%, -230%) scale(0.9) rotate(10deg) translateZ(0); }
+        .p5 { transition-delay: 0.06s; } .active .p5 { transform: translate(190%, -260%) scale(1.2) rotate(6deg) translateZ(0); }
+        .p6 { transition-delay: 0.15s; } .active .p6 { transform: translate(330%, -200%) scale(0.9) rotate(-4deg) translateZ(0); }
+        .p7 { transition-delay: 0.03s; } .active .p7 { transform: translate(260%, -50%) scale(1.5) rotate(12deg) translateZ(0); z-index: 5; }
+        .p8 { transition-delay: 0.10s; } .active .p8 { transform: translate(220%, 70%) scale(0.7) rotate(-7deg) translateZ(0); }
+        .p9 { transition-delay: 0.05s; } .active .p9 { transform: translate(310%, 190%) scale(1.1) rotate(4deg) translateZ(0); }
+        .p10 { transition-delay: 0.18s; } .active .p10 { transform: translate(150%, 150%) scale(0.8) rotate(-15deg) translateZ(0); }
+        .p11 { transition-delay: 0.04s; } .active .p11 { transform: translate(-50%, 190%) scale(1.2) rotate(3deg) translateZ(0); }
+        .p12 { transition-delay: 0.11s; } .active .p12 { transform: translate(70%, 260%) scale(0.7) rotate(-6deg) translateZ(0); }
+        .p13 { transition-delay: 0.07s; } .active .p13 { transform: translate(-290%, 230%) scale(1.1) rotate(-9deg) translateZ(0); }
+        .p14 { transition-delay: 0.19s; } .active .p14 { transform: translate(-190%, 140%) scale(0.8) rotate(7deg) translateZ(0); }
+        .p15 { transition-delay: 0.05s; } .active .p15 { transform: translate(-360%, -30%) scale(1.5) rotate(-14deg) translateZ(0); z-index: 5; }
+        .p16 { transition-delay: 0.14s; } .active .p16 { transform: translate(-240%, -90%) scale(0.7) rotate(11deg) translateZ(0); }
+        .p17 { transition-delay: 0.21s; } .active .p17 { transform: translate(130%, -310%) scale(0.6) rotate(-3deg) translateZ(0); }
+        .p18 { transition-delay: 0.24s; } .active .p18 { transform: translate(-310%, 310%) scale(0.6) rotate(20deg) translateZ(0); }
+
+        .main-container {
+            display: flex; align-items: center; gap: 70px; z-index: 1000;
+            position: relative; filter: drop-shadow(0 0 40px rgba(0,0,0,0.8));
+        }
+
+        .brand-logo { width: 50px; height: auto; display: block; }
+
+        .dynamic-x { 
+            font-size: 28px; font-weight: 300; color: #fff; 
+            display: block; transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .menu-links { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+        .menu-links a { 
+            text-decoration: none; color: #666; font-size: 32px; font-weight: 400; 
+            transition: color 0.3s ease, transform 0.3s ease; 
+            position: relative; width: fit-content; display: block; 
+        }
+        .menu-links a::after { 
+            content: ''; position: absolute; width: 0; height: 1.5px; 
+            bottom: 6px; left: 0; background-color: #fff; 
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
+        }
+        .menu-links a:hover { color: #fff; transform: translateX(10px); }
+        .menu-links a:hover::after { width: 100%; }
+
+        .side-label { position: fixed; top: 50%; transform: translateY(-50%); font-weight: 300; font-size: 13px; color: #333; text-transform: lowercase; letter-spacing: 0.3em; z-index: 1001; pointer-events: none; }
+        .left-edge { left: 40px; } .right-edge { right: 40px; }
+        footer { position: fixed; bottom: 40px; left: 0; width: 100%; text-align: center; font-size: 11px; color: #333; letter-spacing: 0.2em; z-index: 1001; pointer-events: none; }
+
         @media (max-width: 900px) {
-            /* Esconde elementos pesados ou desnecessários */
             .preview-container, .side-label { display: none; }
-            
-            /* Ajuste da tipografia de fundo */
-            .bg-typo { font-size: 22vw; line-height: 0.9; }
-            
-            /* Loader ajustado para telas verticais */
-            .loader-counter { font-size: 15vw; }
-            #loader { padding: 30px; }
-            
-            /* Header */
-            header { padding: 0 20px; top: 0; height: 100px; }
-            /* Garante que o switch fique centralizado */
-            .lang-switcher { grid-column: 2; margin-top: 0; }
-            
-            /* Central */
-            .main-container { gap: 30px; }
-            .brand-logo { width: 50px; margin-bottom: 10px; }
-            
-            /* Links maiores para toque */
-            .menu-links a { font-size: 18px; padding: 15px 20px; }
-            
-            /* Footer */
-            footer { bottom: 30px; font-size: 9px; }
+            .bg-typo { font-size: 35vw; }
+            .main-container { flex-direction: column; text-align: center; gap: 20px; }
+            .menu-links { align-items: center; }
+            .brand-logo { width: 180px; } 
+            .lang-switcher { top: 30px; }
+            footer { bottom: 20px; font-size: 9px; }
+            .loader-counter { font-size: 80px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="loader-data">
-            <span>System check</span>
-            <span>v.2025</span>
-        </div>
-        <div class="loader-counter" id="counter">000</div>
-        <div class="progress-track">
-            <div class="progress-fill" id="progress-fill"></div>
+    <div id="loader-wrapper">
+        <div class="loader-slice slice-1"></div>
+        <div class="loader-slice slice-2"></div>
+        <div class="loader-slice slice-3"></div>
+        <div class="loader-slice slice-4"></div>
+        <div class="loader-slice slice-5"></div>
+        
+        <div class="loader-counter-container">
+            <div class="loader-counter" id="counter">0</div>
         </div>
     </div>
 
-    <div id="scroll-progress"></div>
+    <div class="lang-switcher">
+        <span id="btn-pt" class="lang-btn active" onclick="switchLang('pt')">PT</span>
+        <span style="color: #111;">|</span>
+        <span id="btn-en" class="lang-btn" onclick="switchLang('en')">EN</span>
+    </div>
 
-    <header>
-        <div></div>
-        
-        <div class="lang-switcher">
-            <span id="btn-pt" class="lang-btn active" onclick="switchLang('pt')">PT</span>
-            <span style="color: #333;">|</span>
-            <span id="btn-en" class="lang-btn" onclick="switchLang('en')">EN</span>
+    <div class="bg-typo-container">
+        <div class="bg-typo" id="liquid-text">RYAN<br>VIEIRA</div>
+    </div>
+
+    <div class="preview-container" id="scene-3d">
+        <div class="preview-group" id="preview-projetos">
+            <img src="img/redcoming.png" class="preview-img p1">
+            <img src="img/borboleta.jpg" class="preview-img p2">
+            <img src="img/grizzlies8.jpg" class="preview-img p3">
+            <img src="img/nadie-sabie.jpg" class="preview-img p4">
+            <img src="img/saoko.png" class="preview-img p5">
+            <img src="img/grizzlies-concept-kit.jpg" class="preview-img p6">
+            <img src="img/chico.png" class="preview-img p7">
+            <img src="img/lendas.jpg" class="preview-img p8">
+            <img src="img/pinktape.png" class="preview-img p9">
+            <img src="img/type-season.jpg" class="preview-img p10">
+            <img src="img/umaloucura.png" class="preview-img p11">
+            <img src="img/asics-letter.png" class="preview-img p12">
+            <img src="img/lendas-site-1.png" class="preview-img p13">
+            <img src="img/grizzlies2.jpg" class="preview-img p14">
+            <img src="img/saoko.png" class="preview-img p15">
+            <img src="img/pinktape.png" class="preview-img p16">
+            <img src="img/redtaylorposter.jpg" class="preview-img p17">
+            <img src="img/nike-letter.png" class="preview-img p18">
+        </div>
+
+        <div class="preview-group" id="preview-galeria">
+            <img src="img/galeria/afterhours.jpg" class="preview-img p1">
+            <img src="img/galeria/acidade.png" class="preview-img p2">
+            <img src="img/galeria/euphoria.jpg" class="preview-img p3">
+            <img src="img/galeria/ghost.jpg" class="preview-img p4">
+            <img src="img/galeria/judgmentday.jpg" class="preview-img p5">
+            <img src="img/galeria/metro.jpg" class="preview-img p6">
+            <img src="img/galeria/rauw.jpg" class="preview-img p7">
+            <img src="img/galeria/soulmates.jpg" class="preview-img p8">
+            <img src="img/galeria/utopia.jpg" class="preview-img p9">
+            <img src="img/galeria/borboleta.jpg" class="preview-img p10">
+            <img src="img/galeria/exp1.jpg" class="preview-img p11">
+            <img src="img/galeria/exp2.jpg" class="preview-img p12">
+            <img src="img/galeria/exp4.jpg" class="preview-img p13">
+            <img src="img/galeria/fallingdown.jpg" class="preview-img p14">
+            <img src="img/galeria/girlypop.jpg" class="preview-img p15">
+            <img src="img/galeria/plant.jpg" class="preview-img p16">
+            <img src="img/galeria/when.jpg" class="preview-img p17">
+            <img src="img/galeria/tucanotuco.png" class="preview-img p18">
+        </div>
+    </div>
+
+    <span class="side-label left-edge">designer</span>
+    <span class="side-label right-edge">
+        <span class="lang-pt">artista</span>
+        <span class="lang-en">artist</span>
+    </span>
+
+    <main class="main-container">
+        <div class="logo-wrap">
+            <img src="img/rlogo.png" alt="Ryan Vieira Logo" class="brand-logo">
         </div>
         
-        <div></div>
-    </header>
+        <div class="separator-box"><span class="dynamic-x" id="spin-x">×</span></div>
+        
+        <nav class="menu-links">
+            <a href="projetos.html" data-target="preview-projetos">
+                <span class="lang-pt">projetos</span>
+                <span class="lang-en">projects</span>
+            </a>
+            <a href="galeria.html" data-target="preview-galeria">
+                <span class="lang-pt">galeria</span>
+                <span class="lang-en">gallery</span>
+            </a>
+            <a href="sobre.html" data-target="preview-sobre">
+                <span class="lang-pt">sobre</span>
+                <span class="lang-en">about</span>
+            </a>
+        </nav>
+    </main>
 
-    <div class="site-stage">
+    <footer>
+        <p>
+            <span class="lang-pt">© 2025 RYAN VIEIRA. TODOS OS DIREITOS RESERVADOS.</span>
+            <span class="lang-en">© 2025 RYAN VIEIRA. ALL RIGHTS RESERVED.</span>
+        </p>
+    </footer>
 
-        <div class="bg-typo-container">
-            <div class="bg-typo" id="liquid-text">RYAN<br>VIEIRA</div>
-        </div>
-
-        <div class="preview-container" id="scene-3d">
-            <div class="preview-group" id="preview-projetos">
-                <img src="img/redcoming.png" class="preview-img">
-                <img src="img/borboleta.jpg" class="preview-img">
-                <img src="img/grizzlies8.jpg" class="preview-img">
-                <img src="img/nadie-sabie.jpg" class="preview-img">
-                <img src="img/saoko.png" class="preview-img">
-                <img src="img/grizzlies-concept-kit.jpg" class="preview-img">
-                <img src="img/chico.png" class="preview-img">
-                <img src="img/lendas.jpg" class="preview-img">
-                <img src="img/pinktape.png" class="preview-img">
-                <img src="img/type-season.jpg" class="preview-img">
-                <img src="img/grizzlies2.jpg" class="preview-img">
-                <img src="img/saoko.png" class="preview-img">
-                <img src="img/pinktape.png" class="preview-img">
-                <img src="img/redtaylorposter.jpg" class="preview-img">
-            </div>
-
-            <div class="preview-group" id="preview-galeria">
-                <img src="img/galeria/afterhours.jpg" class="preview-img">
-                <img src="img/galeria/acidade.png" class="preview-img">
-                <img src="img/galeria/euphoria.jpg" class="preview-img">
-                <img src="img/galeria/ghost.jpg" class="preview-img">
-                <img src="img/galeria/judgmentday.jpg" class="preview-img">
-                <img src="img/galeria/metro.jpg" class="preview-img">
-                <img src="img/galeria/rauw.jpg" class="preview-img">
-                <img src="img/galeria/soulmates.jpg" class="preview-img">
-                <img src="img/galeria/utopia.jpg" class="preview-img">
-                <img src="img/galeria/borboleta.jpg" class="preview-img">
-                <img src="img/galeria/exp1.jpg" class="preview-img">
-                <img src="img/galeria/exp2.jpg" class="preview-img">
-            </div>
-
-            <div class="preview-group" id="preview-sobre">
-                <img src="img/fotosobre.png" class="preview-img">
-                <img src="img/iconesobre.png" class="preview-img">
-                <img src="img/fotosobre.png" class="preview-img">
-            </div>
-        </div>
-
-        <span class="side-label left-edge">designer</span>
-        <span class="side-label right-edge">
-            <span class="lang-pt">artista</span>
-            <span class="lang-en">artist</span>
-        </span>
-
-        <main class="main-container">
-            <div class="logo-wrap">
-                <img src="img/logo.png" alt="Ryan Vieira" class="brand-logo">
-            </div>
-            
-            <div class="separator-box"><span class="dynamic-x" id="spin-x">×</span></div>
-            
-            <nav class="menu-links">
-                <a href="projetos.html" data-target="preview-projetos">
-                    <span class="lang-pt">projetos</span>
-                    <span class="lang-en">projects</span>
-                </a>
-                <a href="galeria.html" data-target="preview-galeria">
-                    <span class="lang-pt">galeria</span>
-                    <span class="lang-en">gallery</span>
-                </a>
-                <a href="sobre.html" data-target="preview-sobre">
-                    <span class="lang-pt">sobre</span>
-                    <span class="lang-en">about</span>
-                </a>
-            </nav>
-        </main>
-
-        <footer>
-            <p>
-                <span class="lang-pt">© 2025 RYAN VIEIRA. RESERVED.</span>
-                <span class="lang-en">© 2025 RYAN VIEIRA. RESERVED.</span>
-            </p>
-        </footer>
-
-    </div> <script>
+    <script>
+        const links = document.querySelectorAll('.menu-links a');
+        const groups = document.querySelectorAll('.preview-group');
         const liquidText = document.getElementById('liquid-text');
         const scene = document.getElementById('scene-3d');
         const spinX = document.getElementById('spin-x');
         const counterEl = document.getElementById('counter');
-        const progressFill = document.getElementById('progress-fill');
-        const scrollProgress = document.getElementById('scroll-progress');
-        const links = document.querySelectorAll('.menu-links a');
-        const groups = document.querySelectorAll('.preview-group');
 
-        // --- 1. LOADER ENGINE ---
+        // --- LOADER LOGIC ---
         let count = 0;
         const interval = setInterval(() => {
-            count += Math.floor(Math.random() * 5) + 1; 
-            if (count > 100) count = 100;
-            counterEl.innerText = count.toString().padStart(3, '0');
-            progressFill.style.width = count + '%';
+            count++;
+            counterEl.innerText = count; // Removi o % para ficar mais minimalista/editorial
+            
             if (count === 100) {
                 clearInterval(interval);
-                setTimeout(() => { document.body.classList.add('loaded'); }, 400); 
+                setTimeout(() => {
+                     document.body.classList.add('loaded');
+                }, 200); 
             }
-        }, 30); 
+        }, 15);
 
-        // --- 2. MOUSE PARALLAX (Só Desktop) ---
-        // Verifica se o dispositivo suporta hover para não gastar recursos no mobile
-        if (window.matchMedia("(hover: hover)").matches) {
-            document.addEventListener('mousemove', (e) => {
-                if (!document.body.classList.contains('loaded')) return;
-                const x = e.clientX;
-                const y = e.clientY;
-                const moveX = (window.innerWidth / 2 - x);
-                const moveY = (window.innerHeight / 2 - y);
-                liquidText.style.transform = `translate(${moveX/30}px, ${moveY/30}px) skew(${moveX/60}deg, ${moveY/60}deg)`;
-                scene.style.transform = `rotateX(${moveY/60}deg) rotateY(${moveX/60}deg)`;
-            });
-        }
+        // MOUSE PARALLAX
+        document.addEventListener('mousemove', (e) => {
+            if (!document.body.classList.contains('loaded')) return;
 
-        // --- 3. BARRA DE ROLAGEM VERTICAL ---
-        window.addEventListener('scroll', () => {
-            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrollPercentage = (scrollTop / scrollHeight) * 100;
-            scrollProgress.style.height = scrollPercentage + '%';
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            const moveX = (window.innerWidth / 2 - x);
+            const moveY = (window.innerHeight / 2 - y);
+
+            liquidText.style.transform = `translate(${moveX/25}px, ${moveY/25}px) skew(${moveX/40}deg, ${moveY/40}deg)`;
+            scene.style.transform = `rotateX(${moveY/45}deg) rotateY(${moveX/45}deg)`;
         });
 
-        // --- 4. RANDOMIZAÇÃO E INTERAÇÃO ---
+        // FUNÇÃO DE RANDOMIZAÇÃO
         function randomizeImages(group) {
             const images = group.querySelectorAll('.preview-img');
+            
             images.forEach((img, index) => {
                 const angle = Math.random() * Math.PI * 2;
-                const distance = (Math.random() * 35 + 25); 
-                const tx = Math.cos(angle) * distance; 
-                const ty = Math.sin(angle) * distance * 0.8;
-                const r = (Math.random() - 0.5) * 40; 
-                const s = 0.5 + Math.random() * 0.5; 
-                const d = Math.random() * 0.15; 
-                img.style.setProperty('--tx', `${tx}vw`);
-                img.style.setProperty('--ty', `${ty}vh`);
+                const distance = (Math.random() * 70 + 25); 
+                
+                const tx = Math.cos(angle) * distance * 4; 
+                const ty = Math.sin(angle) * distance * 3; 
+
+                const r = (Math.random() - 0.5) * 30;
+                const s = 0.6 + Math.random() * 0.7;
+                const d = Math.random() * 0.2;
+
+                img.style.setProperty('--tx', `${tx}%`);
+                img.style.setProperty('--ty', `${ty}%`);
                 img.style.setProperty('--r', `${r}deg`);
                 img.style.setProperty('--s', `${s}`);
                 img.style.transitionDelay = `${d}s`;
             });
         }
 
+        // INTERAÇÃO
         links.forEach(link => {
             link.addEventListener('mouseenter', () => {
-                // Só ativa o 3D se não for mobile
-                if (window.innerWidth > 900) {
-                    const targetId = link.getAttribute('data-target');
-                    const targetGroup = document.getElementById(targetId);
-                    if (targetGroup) {
-                        randomizeImages(targetGroup);
-                        void targetGroup.offsetWidth;
+                const targetId = link.getAttribute('data-target');
+                const targetGroup = document.getElementById(targetId);
+                
+                if (targetGroup) {
+                    randomizeImages(targetGroup);
+                    setTimeout(() => {
                         targetGroup.classList.add('active');
-                    }
+                    }, 10);
                 }
-                spinX.style.transform = 'rotate(90deg) scale(1.2)';
+                
+                spinX.style.color = '#fff';
+                spinX.style.transform = 'scale(1.1)';
             });
+            
             link.addEventListener('mouseleave', () => {
                 groups.forEach(group => group.classList.remove('active'));
-                spinX.style.transform = 'rotate(0deg) scale(1)';
+                spinX.style.color = '#fff';
+                spinX.style.transform = 'scale(1)';
             });
         });
 
-        // --- 5. IDIOMA ---
         const bodyEl = document.body;
         function switchLang(lang) {
             if (lang === 'en') {
@@ -445,6 +404,7 @@
             }
             localStorage.setItem('ryanLang', lang);
         }
+
         async function initLanguage() {
             const savedLang = localStorage.getItem('ryanLang');
             if (savedLang) switchLang(savedLang);
