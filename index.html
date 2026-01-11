@@ -52,7 +52,7 @@
         .loader-counter-container {
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            right: 20px; /* Posição padrão Desktop */
             z-index: 10000;
             overflow: hidden; 
         }
@@ -118,7 +118,6 @@
             pointer-events: none; z-index: 0;
         }
         
-        /* Tipografia de fundo (Mobile Base - EXPANDIDA) */
         .bg-typo {
             font-size: 125vw; 
             font-weight: 900; line-height: 0.8;
@@ -133,31 +132,23 @@
         body.en-active .lang-pt { display: none; }
         body.en-active .lang-en { display: inline-block; }
 
-        /* --- LANG SWITCHER (CENTRALIZADO EM TUDO) --- */
+        /* --- LANG SWITCHER --- */
         .lang-switcher { 
             position: fixed;
             left: 50%;
-            transform: translateX(-50%); /* Centraliza exato no eixo X */
-            top: 30px; /* Distância do topo no mobile */
-            
-            display: flex; 
-            gap: 10px; 
-            font-size: 11px; 
-            letter-spacing: 0.1em; 
-            user-select: none; 
-            z-index: 2000;
+            transform: translateX(-50%); 
+            top: 30px; 
+            display: flex; gap: 10px; font-size: 11px; 
+            letter-spacing: 0.1em; user-select: none; z-index: 2000;
             pointer-events: auto;
         }
         .lang-btn { cursor: pointer; color: #444; transition: 0.3s; }
         .lang-btn.active { color: #fff; font-weight: 600; }
 
-
-        /* --- ESTILOS GERAIS (MOBILE FIRST - VERTICAL) --- */
-        
-        /* Layout Principal */
+        /* --- ESTILOS GERAIS (MOBILE FIRST) --- */
         .main-container {
             display: flex; 
-            flex-direction: column; /* Mobile: Coluna */
+            flex-direction: column;
             align-items: center;    
             justify-content: center;
             gap: 35px; 
@@ -167,22 +158,13 @@
             filter: drop-shadow(0 0 40px rgba(0,0,0,0.8));
         }
 
-        .brand-logo { 
-            width: 60px; /* Mobile */
-            height: auto; display: block; 
-        }
-
-        .separator-box { display: none; } /* Oculta X no mobile */
-
-        .dynamic-x { 
-            font-size: 28px; font-weight: 300; color: #fff; 
-            display: block; transition: color 0.3s ease, transform 0.3s ease;
-        }
+        .brand-logo { width: 60px; height: auto; display: block; }
+        .separator-box { display: none; } 
+        .dynamic-x { font-size: 28px; font-weight: 300; color: #fff; display: block; transition: color 0.3s ease, transform 0.3s ease; }
 
         .menu-links { 
             display: flex; flex-direction: column; gap: 15px; 
-            align-items: center; 
-            text-align: center;
+            align-items: center; text-align: center;
         }
         
         .menu-links a { 
@@ -201,12 +183,22 @@
         .menu-links a:hover::after { width: 100%; }
 
         /* Elementos escondidos no Mobile */
-        .preview-container, .side-label { display: none; }
+        .preview-container, .side-label, .top-nav { display: none; }
 
         footer { 
             position: fixed; bottom: 30px; left: 0; width: 100%; 
             text-align: center; font-size: 9px; 
             color: #333; letter-spacing: 0.2em; z-index: 1001; pointer-events: none; 
+        }
+
+        /* AJUSTE MOBILE ESPECÍFICO PARA O CONTADOR */
+        @media (max-width: 900px) {
+            .loader-counter-container {
+                right: auto;        /* Remove alinhamento a direita */
+                left: 50%;          /* Move para o centro */
+                transform: translateX(-50%); /* Centraliza exato */
+                bottom: 80px;       /* Sobe um pouco para não colar no footer */
+            }
         }
 
 
@@ -217,16 +209,13 @@
         @media (min-width: 900px) {
             body { perspective: 2500px; }
 
-            .loader-counter { font-size: clamp(80px, 15vw, 200px); right: 40px; }
+            .loader-counter { font-size: clamp(80px, 15vw, 200px); }
+            /* Resetando posição do contador para o canto no desktop */
+            .loader-counter-container { left: auto; transform: none; right: 40px; bottom: 20px; }
 
-            /* Ajuste de topo para Desktop (Mantém centralização horizontal) */
             .lang-switcher { top: 50px; }
 
-            .main-container {
-                flex-direction: row;
-                gap: 70px;
-            }
-            
+            .main-container { flex-direction: row; gap: 70px; }
             .brand-logo { width: 50px; }
             .separator-box { display: block; }
 
@@ -319,15 +308,15 @@
     <div class="preview-container" id="scene-3d">
         <div class="preview-group" id="preview-projetos">
             <img src="img/redposter.jpg" class="preview-img p1">
-            <img src="img/borboleta.jpg" class="preview-img p2">
+            <img src="img/sos.jpg" class="preview-img p2">
             <img src="img/grizzlies8.jpg" class="preview-img p3">
             <img src="img/nadie-sabie.jpg" class="preview-img p4">
-            <img src="img/saoko.png" class="preview-img p5">
+            <img src="img/weltita.jpg" class="preview-img p5">
             <img src="img/grizzlies-concept-kit.jpg" class="preview-img p6">
             <img src="img/chico.png" class="preview-img p7">
             <img src="img/lendas.jpg" class="preview-img p8">
-            <img src="img/pinktape.png" class="preview-img p9">
-            <img src="img/type-season.jpg" class="preview-img p10">
+            <img src="img/weltita.png" class="preview-img p9">
+            <img src="img/offwhite.png" class="preview-img p10">
             <img src="img/umaloucura.png" class="preview-img p11">
             <img src="img/asics-letter.png" class="preview-img p12">
             <img src="img/lendas-site-1.png" class="preview-img p13">
@@ -335,7 +324,7 @@
             <img src="img/saoko.png" class="preview-img p15">
             <img src="img/pinktape.png" class="preview-img p16">
             <img src="img/redtaylorposter.jpg" class="preview-img p17">
-            <img src="img/nike-letter.png" class="preview-img p18">
+            <img src="img/prada-letter.png" class="preview-img p18">
         </div>
 
         <div class="preview-group" id="preview-galeria">
