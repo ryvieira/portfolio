@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HX23W683FK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HX23W683FK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-HX23W683FK');
+    </script>
 
-  gtag('config', 'G-HX23W683FK');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre — Ryan Vieira</title>
@@ -20,25 +19,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-       /* Cor da seleção de texto */
+        /* === BASE STYLES === */
         ::selection { background-color: #fff; color: #000; }
-
-        /* Barra de rolagem */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-        /* BASE & RESET */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
+        html { scroll-behavior: smooth; }
+        body { 
+            background-color: #000; color: #fff; 
+            font-family: 'Inter', sans-serif; line-height: 1.6; 
+            overflow-x: hidden; -webkit-font-smoothing: antialiased; 
         }
 
         /* --- LÓGICA MULTILINGUE --- */
@@ -47,79 +40,54 @@
         body.en-active .lang-en { display: inline; }
         body.en-active div.lang-en { display: block; }
 
-        /* --- SISTEMA DE ANIMAÇÃO HÍBRIDO --- */
-        
-        /* Estado Base (Invisível) */
-        .reveal-base {
-            opacity: 0;
-            transform: translateY(30px);
-            will-change: opacity, transform;
-        }
+        /* --- ANIMAÇÕES --- */
+        .reveal-base { opacity: 0; transform: translateY(30px); will-change: opacity, transform; }
+        .reveal-base.active { opacity: 1; transform: translateY(0); }
+        .reveal-fast { transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-slow { transform: translateY(40px); transition: opacity 2.0s ease, transform 2.0s ease-out; }
 
-        /* Estado Ativo (Visível) */
-        .reveal-base.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Velocidade Rápida (Resto do site) */
-        .reveal-fast {
-            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* Velocidade Lenta (Texto da Bio) */
-        .reveal-slow {
-            transform: translateY(40px); /* Distância um pouco maior para o texto */
-            transition: opacity 2.0s ease, transform 2.0s ease-out; /* Bem suave */
-        }
-
-        /* --- NAVEGAÇÃO SUPERIOR --- */
-        .top-nav {
-            position: fixed; top: 50px; left: 0; width: 100%; padding: 0 50px;
-            display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+        /* --- NAV --- */
+        .top-nav { 
+            position: fixed; top: 50px; left: 0; width: 100%; padding: 0 50px; 
+            display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; 
             z-index: 2000; pointer-events: none;
         }
-
-        .nav-link {
-            pointer-events: auto; text-decoration: none; color: #444; font-size: 14px;
-            text-transform: lowercase; letter-spacing: 0.2em;
-            transition: color 0.3s; font-weight: 300; justify-self: start;
+        .nav-link { 
+            pointer-events: auto; text-decoration: none; color: #444; font-size: 14px; 
+            text-transform: lowercase; letter-spacing: 0.2em; 
+            transition: color 0.3s; font-weight: 300; justify-self: start; 
         }
         .nav-link:hover { color: #fff; }
-
-        .lang-switcher {
-            pointer-events: auto; display: flex; gap: 10px; font-size: 11px;
-            letter-spacing: 0.1em; user-select: none; justify-self: center;
+        .lang-switcher { 
+            pointer-events: auto; display: flex; gap: 10px; font-size: 11px; 
+            letter-spacing: 0.1em; user-select: none; justify-self: center; 
         }
         .lang-btn { cursor: pointer; color: #333; transition: 0.3s; }
         .lang-btn.active { color: #fff; font-weight: 600; }
         .lang-btn:hover { color: #888; }
-
-        .page-id {
-            color: #444; font-size: 14px; text-transform: lowercase;
-            letter-spacing: 0.2em; font-weight: 300; justify-self: end;
+        .page-id { 
+            color: #444; font-size: 14px; text-transform: lowercase; 
+            letter-spacing: 0.2em; font-weight: 300; justify-self: end; 
         }
 
-        /* LAYOUT CONTAINER */
+        /* --- LAYOUT --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 160px 40px 0 40px; }
-
+        
         header { margin-bottom: 120px; }
         h1 { font-size: 52px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 60px; }
         .header-wrapper { display: flex; gap: 80px; align-items: flex-start; perspective: 1000px; }
 
         /* FOTO */
-        .photo-frame {
+        .photo-frame { 
             flex: 0 0 350px; background-color: #111; overflow: hidden; 
             align-self: flex-start; transform-style: preserve-3d;
             transition: transform 0.15s ease-out, box-shadow 0.3s ease;
             box-shadow: 0 0 0 rgba(255,255,255,0); cursor: pointer;
         }
-        
-        .profile-img {
-            width: 100%; height: auto; display: block;
-            filter: contrast(1.1); transform: scale(1.1);
-            transition: filter 0.5s ease, transform 0.5s ease;
-            pointer-events: none; 
+        .profile-img { 
+            width: 100%; height: auto; display: block; 
+            filter: contrast(1.1); transform: scale(1.1); 
+            transition: filter 0.5s ease, transform 0.5s ease; pointer-events: none; 
         }
         .photo-frame:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
 
@@ -127,12 +95,11 @@
         .bio-text { font-size: 21px; font-weight: 300; color: #ccc; margin-bottom: 30px; }
         .bio-text strong { color: #fff; font-weight: 500; }
 
-        /* REDES SOCIAIS */
         .socials-wrapper { margin-top: 40px; display: flex; gap: 25px; flex-wrap: wrap; }
-        .social-link {
-            color: #666; text-decoration: none; font-size: 15px; font-weight: 400;
-            text-transform: lowercase; letter-spacing: 0.05em;
-            transition: color 0.3s ease, transform 0.3s ease; display: inline-block;
+        .social-link { 
+            color: #666; text-decoration: none; font-size: 15px; font-weight: 400; 
+            text-transform: lowercase; letter-spacing: 0.05em; 
+            transition: color 0.3s ease, transform 0.3s ease; display: inline-block; 
         }
         .social-link:hover { color: #fff; transform: translateY(-2px); }
 
@@ -149,35 +116,54 @@
         .client-tag { display: inline-block; padding: 8px 18px; border: 1px solid #222; color: #eee; font-size: 16px; font-weight: 400; transition: 0.4s ease; cursor: default; }
         .client-tag:hover { background-color: #fff; color: #000; border-color: #fff; transform: translateY(-3px); }
 
-        /* CV */
+        /* CV SECTION */
         .cv-section { margin-top: 80px; padding-top: 60px; border-top: 1px solid #1a1a1a; }
-        .cv-button {
-            display: inline-flex; align-items: center; gap: 15px; padding: 20px 40px;
-            border: 1px solid #fff; color: #fff; text-decoration: none;
-            font-size: 14px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        .cv-button { 
+            display: inline-flex; align-items: center; gap: 15px; padding: 20px 40px; 
+            border: 1px solid #fff; color: #fff; text-decoration: none; 
+            font-size: 14px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; 
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         .cv-button:hover { background-color: #fff; color: #000; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255,255,255,0.1); }
         .cv-button .icon { font-size: 18px; transition: transform 0.4s ease; }
         .cv-button:hover .icon { transform: translateY(3px); }
 
+        /* CONTACT SECTION (EMAIL COPY) */
         .cta-section { margin-top: 100px; padding-top: 100px; border-top: 1px solid #1a1a1a; text-align: left; }
         .cta-title { font-size: 42px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 40px; }
         
-        .cta-link { font-size: 24px; font-weight: 300; color: #888; text-decoration: none; transition: color 0.4s ease; position: relative; display: inline-block; }
-        .cta-link::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -5px; left: 0; background-color: #fff; transition: width 0.4s ease; }
-        .cta-link:hover { color: #fff; }
-        .cta-link:hover::after { width: 100%; }
+        .email-display {
+            font-size: clamp(24px, 4vw, 56px); font-weight: 300; color: #888; 
+            cursor: pointer; position: relative; display: inline-block; 
+            transition: color 0.3s; word-break: break-all; line-height: 1.1;
+        }
+        .email-display:hover { color: #fff; }
+        
+        /* Tooltip de Copiar (PADRÃO PT) */
+        .email-display::after {
+            content: "Clique para copiar"; position: absolute; top: -30px; left: 0;
+            font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+            background: #fff; color: #000; padding: 4px 8px; border-radius: 2px;
+            opacity: 0; transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none; transform: translateY(10px);
+        }
+        .email-display:hover::after { opacity: 1; transform: translateY(0); }
+        .email-display.copied::after { content: "Copiado!"; background: #00ff00; }
+
+        /* TRADUÇÃO DO TOOLTIP (QUANDO EM INGLÊS) */
+        body.en-active .email-display::after { content: "Click to copy"; }
+        body.en-active .email-display.copied::after { content: "Copied!"; }
+
 
         /* FOOTER NAV */
-        .footer-navigation-container {
+        .footer-navigation-container { 
             padding: 120px 0 100px 0; display: flex; justify-content: space-between; 
-            border-top: 1px solid #1a1a1a; margin-top: 100px;
+            border-top: 1px solid #1a1a1a; margin-top: 100px; 
         }
-        .footer-nav-link {
+        .footer-nav-link { 
             text-decoration: none; color: #fff; font-size: clamp(24px, 2.5vw, 32px); 
-            font-weight: 500; letter-spacing: -0.02em; display: flex; align-items: center;
-            gap: 15px; transition: all 0.4s ease; white-space: nowrap;
+            font-weight: 500; letter-spacing: -0.02em; display: flex; align-items: center; 
+            gap: 15px; transition: all 0.4s ease; white-space: nowrap; 
         }
         .footer-nav-link .arrow { font-weight: 300; transition: transform 0.4s ease; font-size: 0.9em; }
         .footer-nav-link:hover { color: #999; }
@@ -186,17 +172,9 @@
         .prev-page-btn:hover .arrow { transform: translateX(-10px); }
 
         /* CORTINAS */
-        .transition-curtain-left {
-            position: fixed; top: 0; left: -100%; width: 100%; height: 100%;
-            background-color: #000; z-index: 9999; pointer-events: none;
-            transition: left 0.8s cubic-bezier(0.8, 0, 0.2, 1);
-        }
+        .transition-curtain-left { position: fixed; top: 0; left: -100%; width: 100%; height: 100%; background-color: #000; z-index: 9999; pointer-events: none; transition: left 0.8s cubic-bezier(0.8, 0, 0.2, 1); }
         .transition-curtain-left.active { left: 0; }
-        .transition-curtain-right {
-            position: fixed; top: 0; left: 100%; width: 100%; height: 100%;
-            background-color: #000; z-index: 9999; pointer-events: none;
-            transition: left 0.8s cubic-bezier(0.8, 0, 0.2, 1);
-        }
+        .transition-curtain-right { position: fixed; top: 0; left: 100%; width: 100%; height: 100%; background-color: #000; z-index: 9999; pointer-events: none; transition: left 0.8s cubic-bezier(0.8, 0, 0.2, 1); }
         .transition-curtain-right.active { left: 0; }
 
         @media (max-width: 900px) {
@@ -266,10 +244,17 @@
             <div class="grid-column">
                 <section>
                     <h2 class="reveal-base reveal-fast"><span class="lang-pt">Experiências</span><span class="lang-en">Experience</span></h2>
+                    
+                    <div class="item reveal-base reveal-fast">
+                        <h3><span class="lang-pt">Designer & Social Media</span><span class="lang-en">Designer & Social Media</span></h3>
+                        <p>ZooData</p>
+                        <span class="date">2025 — <span class="lang-pt">AGORA</span><span class="lang-en">PRESENT</span></span>
+                    </div>
+
                     <div class="item reveal-base reveal-fast">
                         <h3><span class="lang-pt">Estagiário de Design</span><span class="lang-en">Design Intern</span></h3>
                         <p>ECOA PUC-Rio</p>
-                        <span class="date">2025 — <span class="lang-pt">AGORA</span><span class="lang-en">NOW</span></span>
+                        <span class="date">2025 — <span class="lang-pt">AGORA</span><span class="lang-en">PRESENT</span></span>
                     </div>
                     <div class="item reveal-base reveal-fast">
                         <h3>Designer Gráfico</h3>
@@ -279,7 +264,7 @@
                     <div class="item reveal-base reveal-fast">
                         <h3>Freelancer</h3>
                         <p><span class="lang-pt">Independente</span><span class="lang-en">Independent</span></p>
-                        <span class="date">2020 — <span class="lang-pt">AGORA</span><span class="lang-en">NOW</span></span>
+                        <span class="date">2020 — 2023</span>
                     </div>
                 </section>
             </div>
@@ -326,10 +311,10 @@
                 <span class="lang-pt">Trabalhando em algo novo? <br> Vamos conversar.</span>
                 <span class="lang-en">Working on something new? <br> Let's talk.</span>
             </h2>
-            <a href="mailto:contact.ryanvieira@gmail.com" class="cta-link">
-                <span class="lang-pt">Entre em contato ↗</span>
-                <span class="lang-en">Get in touch ↗</span>
-            </a>
+            
+            <div class="email-display" onclick="copyEmail(this)">
+                contact.ryanvieira@gmail.com
+            </div>
         </section>
 
         <div class="footer-navigation-container reveal-base reveal-fast">
@@ -348,6 +333,15 @@
     </div>
 
     <script>
+        // LÓGICA DE COPIAR EMAIL
+        function copyEmail(element) {
+            const email = element.innerText.trim();
+            navigator.clipboard.writeText(email).then(() => {
+                element.classList.add('copied');
+                setTimeout(() => { element.classList.remove('copied'); }, 2000);
+            }).catch(err => console.error('Erro ao copiar:', err));
+        }
+
         // LÓGICA DE IDIOMA
         const bodyEl = document.body;
         const btnPt = document.getElementById('btn-pt');
@@ -372,8 +366,6 @@
             let currentDelay = 0;
 
             elements.forEach((el) => {
-                // Se for "slow" (texto da bio), adiciona muito delay (600ms) para tempo de leitura
-                // Se for "fast" (resto), adiciona pouco delay (100ms)
                 const isSlow = el.classList.contains('reveal-slow');
                 const increment = isSlow ? 600 : 100;
 
@@ -420,8 +412,8 @@
         // --- LÓGICA DE TRANSIÇÃO (CORTINAS) ---
         const curtainLeft = document.querySelector('.transition-curtain-left');
         const curtainRight = document.querySelector('.transition-curtain-right');
-        const prevPageBtn = document.querySelector('.prev-page-btn'); // Link Galeria
-        const nextPageBtn = document.querySelector('.next-page-btn'); // Link Projetos
+        const prevPageBtn = document.querySelector('.prev-page-btn'); 
+        const nextPageBtn = document.querySelector('.next-page-btn'); 
 
         if(prevPageBtn) {
             prevPageBtn.addEventListener('click', (e) => {
